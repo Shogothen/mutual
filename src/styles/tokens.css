@@ -1,0 +1,127 @@
+/* MUTUAL design tokens – single source of truth for every color, radius and
+   motion value. Components never hardcode colors (§22).
+   v2: tiefere Farbwelt (Void/Obsidian/Ink), Ultraviolet als aktiver Akzent,
+   Aqua als kühler Resonanzton, Coral bewusst sparsam. */
+
+:root {
+  /* Base fields: void -> obsidian -> ink (räumliche Tiefe statt Schwarz) */
+  --c-void: 7 7 17;          /* #070711  app background        */
+  --c-abyss: 12 13 24;       /* #0c0d18  raised surfaces       */
+  --c-smoke: 18 20 35;       /* #121423  cards                 */
+  --c-veil: 42 44 68;        /* #2a2c44  borders / dividers    */
+
+  /* Light: pearl for text, lavender + ultraviolet accents */
+  --c-pearl: 245 242 255;    /* #f5f2ff  primary text          */
+  --c-mist: 184 180 201;     /* #b8b4c9  secondary text        */
+  --c-lavender: 195 183 255; /* #c3b7ff  interactive accent    */
+  --c-iris: 140 118 255;     /* #8c76ff  ultraviolet, active   */
+
+  /* Aqua: kühler Resonanzton (Matches, Verbindungen) */
+  --c-aqua: 101 218 202;     /* #65daca */
+
+  /* Warm coral – reserved for resonance moments; danger separat */
+  --c-coral: 255 140 123;    /* #ff8c7b */
+  --c-danger: 255 107 120;   /* #ff6b78 */
+
+  --font-sans: "Schibsted Grotesk Variable", system-ui, sans-serif;
+  --font-display: "Fraunces Variable", Georgia, serif;
+
+  --radius-card: 1.25rem;
+  --radius-pill: 9999px;
+
+  /* Motion tokens (mirrored in src/components/motion/motionTokens.ts) */
+  --motion-fast: 160ms;
+  --motion-base: 280ms;
+  --motion-slow: 560ms;
+  --motion-reveal: 1200ms;
+  --ease-organic: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-drift: cubic-bezier(0.45, 0, 0.15, 1);
+}
+
+/* Feine Körnung über feTurbulence – Materialtiefe statt flacher Fläche. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Subtile Vignette für räumliche Konzentration. */
+.vignette::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(var(--c-void) / 0.55) 100%);
+}
+
+/* ── v2 High-End-Utilities ────────────────────────────────────────────── */
+
+/* Irisierender Text für große Headlines. */
+.holo-text {
+  background: linear-gradient(
+    100deg,
+    rgb(var(--c-pearl)) 0%,
+    rgb(var(--c-lavender)) 34%,
+    rgb(var(--c-aqua)) 58%,
+    rgb(var(--c-pearl)) 82%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: holo-shift 9s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .holo-text { animation: none; }
+}
+@keyframes holo-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Irisierende Kante über Conic-Gradient + Mask – für zentrale Karten. */
+.iridescent-border {
+  position: relative;
+}
+.iridescent-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from 210deg,
+    rgb(var(--c-veil) / 0.9),
+    rgb(var(--c-iris) / 0.75),
+    rgb(var(--c-veil) / 0.9) 32%,
+    rgb(var(--c-aqua) / 0.6) 52%,
+    rgb(var(--c-veil) / 0.9) 70%,
+    rgb(var(--c-lavender) / 0.7) 88%,
+    rgb(var(--c-veil) / 0.9)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Sigil-Atmung. */
+.sigil-breathe {
+  animation: sigil-breathe 6.5s ease-in-out infinite;
+}
+@keyframes sigil-breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.035) rotate(1.2deg); }
+}
+
+/* Karten-Tilt: weiche Rückstellung, Bewegung setzt der Pointer. */
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 480ms var(--ease-organic);
+  will-change: transform;
+}

@@ -1,0 +1,38 @@
+@import "./tokens.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+
+body {
+  @apply bg-void text-pearl font-sans antialiased;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
+  min-height: 100dvh;
+}
+
+/* Visible focus everywhere – accessibility over aesthetics */
+:focus-visible {
+  outline: 2px solid rgb(var(--c-lavender));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection { background: rgb(var(--c-iris) / 0.4); }
+
+.skip-link {
+  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50
+         focus:rounded-pill focus:bg-abyss focus:px-4 focus:py-2;
+}
+
+/* Privacy shield blur (§25) */
+.privacy-blurred > #app-content { filter: blur(24px); transition: filter 200ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
